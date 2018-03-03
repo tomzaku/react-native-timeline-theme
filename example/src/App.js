@@ -18,16 +18,17 @@ const instructions = Platform.select({
   android: 'Double tap R on your keyboard to reload,\n' +
     'Shake or press menu button for dev menu',
 });
-import Timeline from './timeline'
+import Timeline from '../lib/index'
 
 
 type Props = {};
+
 const data = [
-  {time: '09:00', title: 'Event 1', description: 'Event 1 Description'},
-  {time: '10:45', title: 'Event 2', description: 'Event 2 Description'},
-  {time: '12:00', title: 'Event 3', description: 'Event 3 Description'},
-  {time: '14:00', title: 'Event 4', description: 'Event 4 Description'},
-  {time: '16:30', title: 'Event 5', description: 'Event 5 Description'}
+  {time: new Date(), title: 'Event 1', description: 'Event 1 Description'},
+  {time: new Date(), title: 'Event 2', description: 'Event 2 Description'},
+  {time: new Date(), title: 'Event 3', description: 'Event 3 Description'},
+  {time: new Date(), title: 'Event 4', description: 'Event 4 Description'},
+  {time: new Date(), title: 'Event 5', description: 'Event 5 Description'}
 ]
 export default class App extends Component<Props> {
   render() {
@@ -50,7 +51,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#B2D1E6',
   },
   timeline: {
-    backgroundColor: '#43657A',
+    marginTop: 20,
+    // backgroundColor: '#43657A',
   },
   container: {
     flex: 1,
