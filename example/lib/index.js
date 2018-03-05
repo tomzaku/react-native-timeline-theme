@@ -58,28 +58,27 @@ export default class Timeline extends Component {
         break
       case 'single-column-right':
         content = (
-          <View style={[styles.rowContainer, rowContainerStyle]}>
-            {this.renderEvent(item, index)}
+          <View style={[styles.rowContainer, {flexDirection: 'row-reverse', justifyContent: 'flex-end' }, rowContainerStyle]}>
             {this.renderTime(item, index)}
             {this.renderCircle(item, index)}
+            {this.renderEvent(item, index)}
           </View>
         )
         break
       case 'two-column':
-        content = index%2==0?(
-          <View style={[styles.rowContainer, rowContainerStyle]}>
-            {this.renderTime(item, index)}
-            {this.renderEvent(item, index)}
-            {this.renderCircle(item, index)}
-          </View>
-        ):(
-          <View style={[styles.rowContainer, rowContainerStyle]}>
-            {this.renderEvent(item, index)}
-            {this.renderTime(item, index)}
-            {this.renderCircle(item, index)}
+        content = (
+          <View style={[styles.rowContainer, index % 2 == 0 ? {} : { flexDirection: 'row-reverse'} , rowContainerStyle]}>
+            <View style={{flex: 1}} >
+              {this.renderTime(item, index)}
+            </View>
+            <View style={{ width: 30 }}>
+              {this.renderCircle(item, index)}
+            </View>
+            <View style={{flex: 1}}>
+              {this.renderEvent(item, index)}
+            </View>
           </View>
         )
-        break
     }
     return (
         <View key={index}>
@@ -326,9 +325,8 @@ let styles = StyleSheet.create({
       flexDirection: 'row',
       flex: 1,
       //alignItems: 'stretch',
-      justifyContent: 'center',
+      // justifyContent: 'center',
       backgroundColor: 'green',
-
   },
   timeContainer: {
       minWidth: 45

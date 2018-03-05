@@ -36,9 +36,27 @@ export default class App extends Component<Props> {
       <View style={styles.container}>
         <View style={styles.header}>
         </View>
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex: 1, backgroundColor: 'red', height: 30}}>
+          </View>
+          <View style={{backgroundColor: 'yellow', width: 60}}>
+          </View>
+          <View style={{flex: 1, backgroundColor: 'green'}}>
+          </View>
+        </View>
         <Timeline
           style={styles.timeline}
           data={data}
+        />
+        <Timeline
+          style={styles.timeline}
+          data={data}
+          columnFormat= 'two-column'
+        />
+        <Timeline
+          style={styles.timeline}
+          data={data}
+          columnFormat= 'single-column-right'
         />
       </View>
     );
@@ -47,7 +65,7 @@ export default class App extends Component<Props> {
 
 const styles = StyleSheet.create({
   header: {
-    height: 150,
+    height: 30,
     backgroundColor: '#B2D1E6',
   },
   timeline: {
