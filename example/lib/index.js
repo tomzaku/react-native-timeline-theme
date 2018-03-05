@@ -5,25 +5,23 @@ import React, {Component} from 'react'
 import {Animated, Easing, Image, FlatList, StyleSheet, Text, TouchableOpacity, View,} from 'react-native'
 import moment from 'moment';
 
-let defaultCircleSize = 6
-let defaultCircleColor = 'black'
-let defaultLineWidth = 1
-let defaultLineColor = 'black'
+let defaultCircleSize = 8
+let defaultCircleColor = '#37474f'
+let defaultLineWidth = 0.75
+let defaultLineColor = '#909090'
 let defaultTimeTextColor = 'black'
 let defaultDotColor = 'white'
 let defaultInnerCircle = 'none'
+let defaultTitleFontSize = 16
 
 export default class Timeline extends Component {
   constructor(props, context) {
-      super(props, context);
-      const { data } = props;
-      this.onEventPress = this.props.onEventPress
-
-      this.state = {
-          data,
-          x: 0,
-          width: 0
-      }
+    super(props, context);
+    const { data } = props;
+    this.onEventPress = this.props.onEventPress
+    this.state = {
+      data,
+    }
   }
   keyExtractor = (item, index) => {
     return `${item.time}-${item.title}`
@@ -33,12 +31,12 @@ export default class Timeline extends Component {
     return (
       <View style={[styles.container, style]}>
         <FlatList
-            style={[styles.listview]}
-            data={data}
-            renderItem={this.renderItem}
-            automaticallyAdjustContentInsets={false}
-            keyExtractor={this.keyExtractor}
-            {...options}
+          style={[styles.listview]}
+          data={data}
+          renderItem={this.renderItem}
+          automaticallyAdjustContentInsets={false}
+          keyExtractor={this.keyExtractor}
+          {...options}
         />
       </View>
     );
@@ -48,20 +46,18 @@ export default class Timeline extends Component {
     const { columnFormat, rowContainerStyle } = this.props;
     switch(columnFormat){
       case 'single-column-left':
-        content = (
-          <View style={[styles.rowContainer, rowContainerStyle]}>
-            {this.renderTime(item, index)}
-            {this.renderCircle(item, index)}
-            {this.renderEvent(item, index)}
-          </View>
-        )
-        break
       case 'single-column-right':
         content = (
-          <View style={[styles.rowContainer, {flexDirection: 'row-reverse', justifyContent: 'flex-end' }, rowContainerStyle]}>
-            {this.renderTime(item, index)}
-            {this.renderCircle(item, index)}
-            {this.renderEvent(item, index)}
+          <View style={[styles.rowContainer,columnFormat === 'single-column-left' ? {} : {flexDirection: 'row-reverse', justifyContent: 'flex-start' }, rowContainerStyle]}>
+            <View>
+              {this.renderTime(item, index)}
+            </View>
+            <View>
+              {this.renderCircle(item, index)}
+            </View>
+            <View style={[{ flex: 1 }]}>
+              {this.renderEvent(item, index)}
+            </View>
           </View>
         )
         break
@@ -71,122 +67,80 @@ export default class Timeline extends Component {
             <View style={{flex: 1}} >
               {this.renderTime(item, index)}
             </View>
-            <View style={{ width: 30 }}>
+            <View>
               {this.renderCircle(item, index)}
             </View>
-            <View style={{flex: 1}}>
+            <View style={{flex: 1 }}>
               {this.renderEvent(item, index)}
             </View>
           </View>
         )
     }
-    return (
-        <View key={index}>
-            {content}
-        </View>
-    )
+    return content
   }
-  
   renderTime = (item, index) => {
-    var timeWrapper = null
+    var textStyle = {}
     switch(this.props.columnFormat){
       case 'single-column-left':
-          timeWrapper = {
-              alignItems: 'flex-end'
-          }
+          textStyle = styles.leftText
           break
       case 'single-column-right':
-          timeWrapper = {
-              alignItems: 'flex-start'
-          }
+          // textStyle = {
+          //     alignItems: 'flex-start'
+          // }
           break
       case 'two-column':
-          timeWrapper = {
-              flex:1,
-              alignItems: index%2==0?'flex-end':'flex-start'
-          }
+          textStyle = index % 2 == 0 ? styles.leftText : textStyle;
           break
     }
-    const { timeContainerStyle, timeStyle } = this.props;
+    let { timeContainerStyle, timeStyle, timeMeridiumStyle, renderTimeBottom, showAmPm } = this.props;
+    renderTimeBottom = item.renderTimeBottom ? item.renderTimeBottom : renderTimeBottom;
     let timeMoment;
     if (typeof(item.time) === 'string') {
       return (
-        <View style={timeWrapper}>
-          <View style={[styles.timeContainer, timeContainerStyle]}>
-            <Text style={[styles.time, timeStyle]}>
-              {item.time}
-            </Text>
+        <View style={[styles.timeContainer, timeContainerStyle]}>
+        <View>
+          <Text style={[styles.time, timeStyle]}>
+            {item.time}
+          </Text>
+        </View>
+          <View style={{ width : 30, height: 30, backgroundColor: 'red' }}>
+            {renderTimeBottom()}
           </View>
         </View>
       )
     } else {
       timeMoment = moment(item.time);
       return (
-        <View style={timeWrapper}>
-          <View style={[styles.timeContainer, timeContainerStyle]}>
-            <Text style={[styles.timeText, timeStyle]}>
-              {timeMoment.format('h.mm')}
-            </Text>
-            <Text style={[styles.timeText, styles.timeMeridiem, timeStyle]}>
-              {timeMoment.format('a').toUpperCase()}
-            </Text>
-          </View>
+        <View style={[styles.timeContainer,timeContainerStyle]}>
+        <View>
+          <Text style={[styles.timeText, textStyle, timeStyle ]}>
+            {showAmPm ? timeMoment.format('hh.mm') : timeMoment.format('HH.mm')}
+          </Text>
+          {showAmPm
+            ? <Text style={[styles.timeText, styles.timeMeridiem, textStyle, timeMeridiumStyle]}>
+                {timeMoment.format('a').toUpperCase()}
+              </Text>
+            : null
+          }
+        </View>
+        <View style={{ flex: 1, backgroundColor: 'red' }}>
+            {renderTimeBottom()}
+        </View>
         </View>
       )
     }
   }
 
   renderEvent = (item, index) => {
-    let lineWidth = item.lineWidth?item.lineWidth:this.props.lineWidth
-    let isLast = this.state.data.slice(-1)[0] === item
-    let lineColor = isLast?('rgba(0,0,0,0)'):(item.lineColor?item.lineColor:this.props.lineColor)
-    var opStyle = null
-
-    switch(this.props.columnFormat){
-      case 'single-column-left':
-        opStyle = {
-            borderColor: lineColor,
-            borderLeftWidth: lineWidth,
-            borderRightWidth: 0,
-            marginLeft: 20,
-            paddingLeft: 20,
-        }
-        break
-      case 'single-column-right':
-        opStyle = {
-            borderColor: lineColor,
-            borderLeftWidth: 0,
-            borderRightWidth: lineWidth,
-            marginRight: 20,
-            paddingRight: 20,
-        }
-        break
-      case 'two-column':
-        opStyle = index%2==0?{
-            borderColor: lineColor,
-            borderLeftWidth: lineWidth,
-            borderRightWidth: 0,
-            marginLeft: 20,
-            paddingLeft: 20,
-        }:{
-            borderColor: lineColor,
-            borderLeftWidth: 0,
-            borderRightWidth: lineWidth,
-            marginRight: 20,
-            paddingRight: 20,
-        }
-        break
-    }
-
-    // <View style={[styles.details, opStyle]} onLayout={(evt)=> { if(!this.state.x && !this.state.width){var {x,width} = evt.nativeEvent.layout;this.setState({x, width})}}}>
     return (
-      <View onLayout={(evt)=> { if(!this.state.x && !this.state.width){var {x,width} = evt.nativeEvent.layout;this.setState({x, width})}}}>
+      <View>
         <TouchableOpacity 
           disabled={this.props.onEventPress == null}
           style={[ this.props.detailContainerStyle]}
           onPress={() => this.props.onEventPress?this.props.onEventPress(item):null}
         >
-          <View style={{ backgroundColor: 'red', marginBottom: 2,}}>
+          <View style={{  marginBottom: 2,}}>
             {this.renderDetail(item, index)}
           </View>
           {this.renderSeparator()}
@@ -196,7 +150,8 @@ export default class Timeline extends Component {
   }
 
   renderDetail = (item, index) => {
-    let title = <Text style={[styles.title, this.props.titleStyle]}>{item.title}</Text>
+    const { titleStyle } = this.props
+    let title = <Text style={[styles.title, titleStyle]}>{item.title}</Text>
     if(item.description)
       title = (
           <View>
@@ -212,82 +167,52 @@ export default class Timeline extends Component {
   }
 
   renderCircle = (item, index) => {
-    let { circleSize, circleColor, lineWidth } = this.props;
+    let { circleSize, circleColor, lineWidth, circleStyle, lineColor, timeStyle, marginTopCircle, data, spacingDot } = this.props;
     circleSize = item.circleSize ? item.circleSize : circleSize
     circleColor = item.circleColor ? item.circleColor : circleColor
     lineWidth = item.lineWidth ? item.lineWidth : lineWidth
-    // let circleStyle = null
-    // switch(this.props.columnFormat){
-    //   case 'single-column-left':
-    //     circleStyle = {
-    //       width: this.state.x?circleSize:0,
-    //       height: this.state.x?circleSize:0,
-    //       borderRadius: circleSize/2,
-    //       backgroundColor: circleColor,
-    //       left: this.state.x - (circleSize/2) + ((lineWidth-1)/2),
-    //     }
-    //     break
-    //   case 'single-column-right':
-    //     circleStyle = {
-    //       width: this.state.width?circleSize:0,
-    //       height: this.state.width?circleSize:0,
-    //       borderRadius: circleSize/2,
-    //       backgroundColor: circleColor,
-    //       left: this.state.width - (circleSize/2) - ((lineWidth-1)/2),
-    //     }
-    //     break
-    //   case 'two-column':
-    //     circleStyle = {
-    //       width: this.state.width?circleSize:0,
-    //       height: this.state.width?circleSize:0,
-    //       borderRadius: circleSize/2,
-    //       backgroundColor: circleColor,
-    //       left: this.state.width - (circleSize/2) - ((lineWidth-1)/2),
-    //     }
-    //     break
-    // }
-
-    var innerCircle = this.renderInnerCircle(item, circleSize);
+    lineColor = item.lineColor ? item.lineColor : lineColor
+    var innerCircle = this.renderInnerCircle(item);
+    let heightLineTop = marginTopCircle / 2;  
     return (
-      <View style={{ alignItems: 'center' }}>
-        <View style={[styles.circle, this.props.circleStyle]}>
+      <View style={{ alignItems: 'center', flex: 1, width: 30 }}>
+        {
+          index != 0
+          ? <View style={[{width: lineWidth, height: heightLineTop, backgroundColor: data[index-1].lineColor ? data[index-1].lineColor : lineColor }]}/>
+          : null
+        }
+        <View style={[styles.circle, circleStyle, { backgroundColor: circleColor, width: circleSize, height: circleSize, marginTop: spacingDot, marginBottom: spacingDot } , index == 0 ? { marginTop: marginTopCircle } : {} ]}>
           {innerCircle}
         </View>
-        <View style={{ width: 1, height: 50, backgroundColor: 'black'}}>
-        </View>
+        <View style={{ width: lineWidth, flex: 1, backgroundColor: lineColor}} />
       </View>
-      
     )
   }
 
   renderInnerCircle(item){
-    var circleSize = item.circleSize?item.circleSize:this.props.circleSize?this.props.circleSize:defaultCircleSize
+    let { innerCircleSize, dotColor, innerCircleType } = this.props;
+    console.log('props', this.props)
+    innerCircleSize = item.innerCircleSize ? item.innerCircleSize : innerCircleSize
+    dotColor = item.dotColor ? item.dotColor : dotColor
     let innerCircle = null;
-    switch(this.props.innerCircle){
-      case 'icon':
-        let iconSource = item.icon?item.icon:this.props.icon
-        let iconStyle = {
-          height: circleSize,
-          width: circleSize,
-        }
-        innerCircle = (<Image source={iconSource} style={[iconStyle, this.props.iconStyle]} />)
-        break;
+    switch(innerCircleType){
       case 'dot':
         let dotStyle = {
-          height: circleSize / 2,
-          width: circleSize / 2,
-          borderRadius: circleSize / 4,
-          backgroundColor: item.dotColor?item.dotColor:this.props.dotColor?this.props.dotColor:defaultDotColor
+          height: innerCircleSize,
+          width: innerCircleSize,
+          borderRadius: innerCircleSize / 2,
+          backgroundColor: dotColor
         }
-        innerCircle = (<View style={[styles.dot, dotStyle]}/>)
+        innerCircle = (<View style={[dotStyle]}/>)
         break;
     }
     return innerCircle;
   }
   renderSeparator(){
-    if(this.isRenderSeparator)
+    const { isRenderSeperator, separatorStyle } = this.props;
+    if(isRenderSeperator)
       return (
-          <View style={[styles.separator, this.props.separatorStyle]}></View>
+          <View style={[styles.separator, separatorStyle]}></View>
       )
     else
       return null
@@ -299,8 +224,14 @@ Timeline.defaultProps = {
     circleColor: defaultCircleColor,
     lineWidth: defaultLineWidth,
     lineColor: defaultLineColor,
-    innerCircle: defaultInnerCircle,
-    columnFormat: 'single-column-left'
+    innerCircleType: defaultInnerCircle,
+    columnFormat: 'single-column-left',
+    innerCircleSize: defaultCircleSize / 2,
+    dotColor: defaultDotColor,
+    renderTimeBottom: () => null,
+    marginTopCircle: defaultTitleFontSize / 2,
+    spacingDot: 4,
+    showAmPm: true,
 }
 
 let styles = StyleSheet.create({
@@ -310,72 +241,56 @@ let styles = StyleSheet.create({
   listview: {
       flex: 1,
   },
-  sectionHeader: {
-      marginBottom: 15,
-      backgroundColor: '#007AFF',
-      height: 30,
-      justifyContent: 'center'
-  },
-  sectionHeaderText: {
-      color: '#FFF',
-      fontSize: 18,
-      alignSelf: 'center',
-  },
   rowContainer: {
       flexDirection: 'row',
       flex: 1,
-      //alignItems: 'stretch',
-      // justifyContent: 'center',
-      backgroundColor: 'green',
   },
   timeContainer: {
-      minWidth: 45
+      minWidth: 45,
+      flex: 1,
+      backgroundColor: 'green',
   },
   time: {
       textAlign: 'right',
       color: defaultTimeTextColor,
   },
   timeText: {
-      textAlign: 'right',
       color: defaultTimeTextColor,
       fontSize: 16,
   },
   timeMeridiem: {
-    fontSize:12,
+    fontSize: 12,
     fontWeight: '200',
+  },
+  leftText: {
+    textAlign: 'right'
   },
   circle: {
       width: defaultCircleSize,
       height: defaultCircleSize,
       borderRadius: 100,
       backgroundColor: 'black',
+      // marginTop: 2,
+      // marginBottom: 2,
       // position: 'absolute',
       // left: -8,
       alignItems: 'center',
       justifyContent: 'center',
   },
-  dot: {
-      width: 8,
-      height: 8,
-      borderRadius: 4,
-      backgroundColor: defaultDotColor,
-  },
   title: {
-      fontSize: 16,
+      fontSize: defaultTitleFontSize,
       fontWeight: 'bold',
   },
-  details: {
+  description: {
       borderLeftWidth: defaultLineWidth,
       flexDirection: 'column',
       flex: 1,
-  },
-  description:{
-      marginTop: 10,
+      marginTop: 6,
   },
   separator: {
-      height: 1,
+      height: 0.75,
       backgroundColor: '#aaa',
-      marginTop: 10,
-      marginBottom: 10
+      marginTop: 6,
+      marginBottom: 6
   }
 });

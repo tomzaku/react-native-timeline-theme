@@ -24,8 +24,8 @@ import Timeline from '../lib/index'
 type Props = {};
 
 const data = [
-  {time: new Date(), title: 'Event 1', description: 'Event 1 Description'},
-  {time: new Date(), title: 'Event 2', description: 'Event 2 Description'},
+  {time: new Date(), title: 'Event 1', description: 'Event 1 Description', lineColor: 'red', circleColor: 'blue'},
+  {time: new Date(), title: 'Event 2', description: 'Event 2 Description', 'lineColor': 'green'},
   {time: new Date(), title: 'Event 3', description: 'Event 3 Description'},
   {time: new Date(), title: 'Event 4', description: 'Event 4 Description'},
   {time: new Date(), title: 'Event 5', description: 'Event 5 Description'}
@@ -47,16 +47,25 @@ export default class App extends Component<Props> {
         <Timeline
           style={styles.timeline}
           data={data}
+          isRenderSeperator
+          // renderTimeBottom={() => <View style={{ flex: 1, height: 20, backgroundColor: 'red'}}/>}
         />
         <Timeline
           style={styles.timeline}
           data={data}
           columnFormat= 'two-column'
+          innerCircleType={'dot'}
+          titleStyle= {styles.timeStyle}
+          isRenderSeperator
+          // renderTimeBottom={() => <View style={{ flex: 1, backgroundColor: 'red'}}/>}
         />
         <Timeline
           style={styles.timeline}
           data={data}
           columnFormat= 'single-column-right'
+          isRenderSeperator
+          showAmPm={false}
+          renderTimeBottom={() => <View style={{ flex: 1, height: 20, backgroundColor: 'red'}}/>}
         />
       </View>
     );
@@ -64,6 +73,9 @@ export default class App extends Component<Props> {
 }
 
 const styles = StyleSheet.create({
+  timeStyle: {
+    fontSize: 50,
+  },
   header: {
     height: 30,
     backgroundColor: '#B2D1E6',
