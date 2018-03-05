@@ -18,7 +18,6 @@ export default class Timeline extends Component {
   constructor(props, context) {
     super(props, context);
     const { data } = props;
-    this.onEventPress = this.props.onEventPress
     this.state = {
       data,
     }
@@ -85,9 +84,6 @@ export default class Timeline extends Component {
           textStyle = styles.leftText
           break
       case 'single-column-right':
-          // textStyle = {
-          //     alignItems: 'flex-start'
-          // }
           break
       case 'two-column':
           textStyle = index % 2 == 0 ? styles.leftText : textStyle;
@@ -99,11 +95,11 @@ export default class Timeline extends Component {
     if (typeof(item.time) === 'string') {
       return (
         <View style={[styles.timeContainer, timeContainerStyle]}>
-        <View>
-          <Text style={[styles.time, timeStyle]}>
-            {item.time}
-          </Text>
-        </View>
+          <View>
+            <Text style={[styles.time, timeStyle]}>
+              {item.time}
+            </Text>
+          </View>
           <View style={{ width : 30, height: 30}}>
             {renderTimeBottom()}
           </View>
@@ -113,32 +109,33 @@ export default class Timeline extends Component {
       timeMoment = moment(item.time);
       return (
         <View style={[styles.timeContainer,timeContainerStyle]}>
-        <View>
-          <Text style={[styles.timeText, textStyle, timeStyle ]}>
-            {showAmPm ? timeMoment.format('hh.mm') : timeMoment.format('HH.mm')}
-          </Text>
-          {showAmPm
-            ? <Text style={[styles.timeText, styles.timeMeridiem, textStyle, timeMeridiumStyle]}>
-                {timeMoment.format('a').toUpperCase()}
-              </Text>
-            : null
-          }
-        </View>
-        <View style={{ flex: 1}}>
-            {renderTimeBottom()}
-        </View>
+          <View>
+            <Text style={[styles.timeText, textStyle, timeStyle ]}>
+              {showAmPm ? timeMoment.format('hh.mm') : timeMoment.format('HH.mm')}
+            </Text>
+            {showAmPm
+              ? <Text style={[styles.timeText, styles.timeMeridiem, textStyle, timeMeridiumStyle]}>
+                  {timeMoment.format('a').toUpperCase()}
+                </Text>
+              : null
+            }
+          </View>
+          <View style={{ flex: 1}}>
+              {renderTimeBottom()}
+          </View>
         </View>
       )
     }
   }
 
   renderEvent = (item, index) => {
+    const { onEventPress, detailContainerStyle } = this.props;
     return (
       <View>
         <TouchableOpacity 
-          disabled={this.props.onEventPress == null}
-          style={[ this.props.detailContainerStyle]}
-          onPress={() => this.props.onEventPress?this.props.onEventPress(item):null}
+          disabled={onEventPress == null}
+          style={[ detailContainerStyle]}
+          onPress={() => onEventPress ? onEventPress(item):null}
         >
           <View style={{  marginBottom: 2,}}>
             {this.renderDetail(item, index)}
