@@ -24,7 +24,7 @@ import Timeline from '../lib/index'
 type Props = {};
 
 const data = [
-  {time: new Date(), title: 'Event 1', description: 'Event 1 Description', lineColor: 'red', circleColor: 'blue'},
+  {time: new Date(), title: 'Event 1', description: 'Event 1 Description', lineColor: 'red', circleColor: 'blue', circleSize: 20, innerCircleSize: 15},
   {time: new Date(), title: 'Event 2', description: 'Event 2 Description', 'lineColor': 'green'},
   {time: new Date(), title: 'Event 3', description: 'Event 3 Description'},
   {time: new Date(), title: 'Event 4', description: 'Event 4 Description'},
@@ -57,6 +57,7 @@ export default class App extends Component<Props> {
           innerCircleType={'dot'}
           titleStyle= {styles.timeStyle}
           isRenderSeperator
+          marginTopCircle={4}
           // renderTimeBottom={() => <View style={{ flex: 1, backgroundColor: 'red'}}/>}
         />
         <Timeline
@@ -65,6 +66,7 @@ export default class App extends Component<Props> {
           columnFormat= 'single-column-right'
           isRenderSeperator
           showAmPm={false}
+          
           renderTimeBottom={() => <View style={{ flex: 1, height: 20, backgroundColor: 'red'}}/>}
         />
       </View>

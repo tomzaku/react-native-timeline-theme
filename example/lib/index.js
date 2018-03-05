@@ -104,7 +104,7 @@ export default class Timeline extends Component {
             {item.time}
           </Text>
         </View>
-          <View style={{ width : 30, height: 30, backgroundColor: 'red' }}>
+          <View style={{ width : 30, height: 30}}>
             {renderTimeBottom()}
           </View>
         </View>
@@ -124,7 +124,7 @@ export default class Timeline extends Component {
             : null
           }
         </View>
-        <View style={{ flex: 1, backgroundColor: 'red' }}>
+        <View style={{ flex: 1}}>
             {renderTimeBottom()}
         </View>
         </View>
@@ -248,7 +248,7 @@ let styles = StyleSheet.create({
   timeContainer: {
       minWidth: 45,
       flex: 1,
-      backgroundColor: 'green',
+      // backgroundColor: 'green',
   },
   time: {
       textAlign: 'right',
