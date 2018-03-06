@@ -13,6 +13,7 @@ let defaultTimeTextColor = 'black'
 let defaultDotColor = 'white'
 let defaultInnerCircle = 'none'
 let defaultTitleFontSize = 16
+let defaultTimeWidth = 55
 
 export default class Timeline extends Component {
   constructor(props, context) {
@@ -26,16 +27,16 @@ export default class Timeline extends Component {
     return `${item.time}-${item.title}`
   }
   render() {
-    const { style, data, options } = this.props;
+    const { styleContainer, data } = this.props;
     return (
-      <View style={[styles.container, style]}>
+      <View style={[styles.container, styleContainer]}>
         <FlatList
           style={[styles.listview]}
           data={data}
           renderItem={this.renderItem}
           automaticallyAdjustContentInsets={false}
           keyExtractor={this.keyExtractor}
-          {...options}
+          {...this.props}
         />
       </View>
     );
@@ -78,56 +79,48 @@ export default class Timeline extends Component {
     return content
   }
   renderTime = (item, index) => {
-    let textStyle = {}
-    switch(this.props.columnFormat){
+    let textStyle = {};
+    let timeContainerWrapper = {};
+    let { timeContainerStyle, timeStyle, timeMeridiumStyle, renderTimeBottom, showAmPm, timeFormat, columnFormat } = this.props;
+    switch(columnFormat){
       case 'single-column-left':
           textStyle = styles.leftText
+          timeContainerWrapper = { maxHeight: defaultTimeWidth }
           break
       case 'single-column-right':
+          timeContainerWrapper = { maxHeight: defaultTimeWidth }
           break
       case 'two-column':
           textStyle = index % 2 == 0 ? styles.leftText : textStyle;
           break
     }
-    let { timeContainerStyle, timeStyle, timeMeridiumStyle, renderTimeBottom, showAmPm, timeFormat } = this.props;
     renderTimeBottom = item.renderTimeBottom ? item.renderTimeBottom : renderTimeBottom;
-    let timeMoment;
+    let hourFormat= null, amPmFormat=null;
     if (typeof(item.time) === 'string') {
-      return (
-        <View style={[styles.timeContainer, timeContainerStyle]}>
-          <View>
-            <Text style={[styles.time, timeStyle]}>
-              {item.time}
-            </Text>
-          </View>
-          <View style={{ width : 30, height: 30}}>
-            {renderTimeBottom()}
-          </View>
-        </View>
-      )
+      hourFormat = item.time
     } else {
-      timeMoment = moment(item.time);
-      
-      return (
-        <View style={[styles.timeContainer,timeContainerStyle]}>
-          <View>
-            <Text style={[styles.timeText, textStyle, timeStyle ]}>
-              {/* {showAmPm ? timeMoment.format('hh.mm') : timeMoment.format('HH.mm')} */}
-              {timeMoment.format(timeFormat)}
-            </Text>
-            {showAmPm
-              ? <Text style={[styles.timeText, styles.timeMeridiem, textStyle, timeMeridiumStyle]}>
-                  {timeMoment.format('a').toUpperCase()}
-                </Text>
-              : null
-            }
-          </View>
-          <View style={{ flex: 1}}>
-              {renderTimeBottom()}
-          </View>
-        </View>
-      )
+      let timeMoment = moment(item.time);
+      hourFormat = timeMoment.format(timeFormat)
+      amPmFormat = showAmPm ? timeMoment.format('a').toUpperCase() : amPmFormat
     }
+    return (
+      <View style={[styles.timeContainer, timeContainerWrapper, timeContainerStyle]}>
+        <View>
+          <Text style={[styles.timeText, textStyle, timeStyle ]}>
+            {hourFormat}
+          </Text>
+          {amPmFormat
+            ? <Text style={[styles.timeText, styles.timeMeridiem, textStyle, timeMeridiumStyle]}>
+                {amPmFormat}
+              </Text>
+            : null
+          }
+        </View>
+        <View style={{ flex: 1}}>
+            {renderTimeBottom()}
+        </View>
+      </View>
+    )
   }
 
   renderEvent = (item, index) => {
@@ -149,27 +142,24 @@ export default class Timeline extends Component {
   }
 
   renderDetail = (item, index) => {
-    let { titleStyle, renderDetail } = this.props
+    let { titleStyle, renderDetail, descriptionStyle } = this.props
+    titleStyle = item.titleStyle ? item.titleStyle : titleStyle
+    descriptionStyle = item.descriptionStyle ? item.descriptionStyle : descriptionStyle
     renderDetail = item.renderDetail ? item.renderDetail : renderDetail
     if (renderDetail) return renderDetail(item, index)
-
-    let title = <Text style={[styles.title, titleStyle]}>{item.title}</Text>
-    if(item.description)
-      title = (
-          <View>
-              <Text style={[styles.title, this.props.titleStyle]}>{item.title}</Text>
-              <Text style={[styles.description, this.props.descriptionStyle]}>{item.description}</Text>
-          </View>
-      )
     return (
       <View style={styles.container}>
-          {title}
+          <Text style={[styles.title, titleStyle]}>{item.title}</Text>
+          { item.description
+           ? <Text style={[styles.description, descriptionStyle]}>{item.description}</Text>
+           : null
+          }
       </View>
     )
   }
 
   renderCircleAndLineVertical = (item, index) => {
-    let { circleSize, circleColor, lineWidth, circleStyle, lineColor, timeStyle, marginTopCircle, data, spacingDot, renderIcon } = this.props;
+    let { circleSize, circleColor, lineWidth, circleStyle, lineColor, timeStyle, marginTopCircle, data, spacingDot, renderIcon, widthLineContainer } = this.props;
     circleSize = item.circleSize ? item.circleSize : circleSize
     circleColor = item.circleColor ? item.circleColor : circleColor
     lineWidth = item.lineWidth ? item.lineWidth : lineWidth
@@ -177,7 +167,7 @@ export default class Timeline extends Component {
     let innerCircle = this.renderInnerCircle(item);
     let heightLineTop = marginTopCircle / 2;  
     return (
-      <View style={{ alignItems: 'center', flex: 1, width: 30 }}>
+      <View style={{ alignItems: 'center', flex: 1, width: widthLineContainer }}>
         {
           index != 0
           ? <View style={[{width: lineWidth, height: heightLineTop, backgroundColor: data[index-1].lineColor ? data[index-1].lineColor : lineColor }]}/>
@@ -206,17 +196,18 @@ export default class Timeline extends Component {
     }
   }
   renderInnerCircle(item){
-    let { innerCircleSize, dotColor, innerCircleType } = this.props;
+    let { dotSize, dotColor, innerCircleType } = this.props;
     console.log('props', this.props)
-    innerCircleSize = item.innerCircleSize ? item.innerCircleSize : innerCircleSize
+    innerCircleType = item.innerCircleType ? item.innerCircleType : innerCircleType
+    dotSize = item.dotSize ? item.dotSize : dotSize
     dotColor = item.dotColor ? item.dotColor : dotColor
     let innerCircle = null;
     switch(innerCircleType){
       case 'dot':
         let dotStyle = {
-          height: innerCircleSize,
-          width: innerCircleSize,
-          borderRadius: innerCircleSize / 2,
+          height: dotSize,
+          width: dotSize,
+          borderRadius: dotSize / 2,
           backgroundColor: dotColor
         }
         innerCircle = (<View style={[dotStyle]}/>)
@@ -242,7 +233,7 @@ Timeline.defaultProps = {
     lineColor: defaultLineColor,
     innerCircleType: defaultInnerCircle,
     columnFormat: 'single-column-left',
-    innerCircleSize: defaultCircleSize / 2,
+    dotSize: defaultCircleSize / 2,
     dotColor: defaultDotColor,
     renderTimeBottom: () => null,
     marginTopCircle: defaultTitleFontSize / 2,
@@ -251,65 +242,68 @@ Timeline.defaultProps = {
     timeFormat: 'hh.mm',
     renderIcon: null,
     renderDetail: null,
+    isRenderSeperator: false,
+    widthLineContainer: 30,
 }
 
 let styles = StyleSheet.create({
   container: {
-      flex: 1,
+    flex: 1,
   },
   listview: {
-      flex: 1,
+    flex: 1,
   },
   rowContainer: {
-      flexDirection: 'row',
-      flex: 1,
+    flexDirection: 'row',
+    flex: 1,
   },
   timeContainer: {
-      minWidth: 45,
-      flex: 1,
-      // backgroundColor: 'green',
+    minWidth: defaultTimeWidth,
+    // maxWidth: 55,
+    flex: 1,
+    // backgroundColor: 'green',
   },
   time: {
-      textAlign: 'right',
-      color: defaultTimeTextColor,
+    textAlign: 'right',
+    color: defaultTimeTextColor,
   },
   timeText: {
-      color: defaultTimeTextColor,
-      fontSize: 16,
+    color: defaultTimeTextColor,
+    fontSize: 16,
   },
   timeMeridiem: {
-    fontSize: 12,
-    fontWeight: '200',
+  fontSize: 12,
+  fontWeight: '200',
   },
   leftText: {
     textAlign: 'right'
   },
   circle: {
-      width: defaultCircleSize,
-      height: defaultCircleSize,
-      borderRadius: 100,
-      backgroundColor: 'black',
-      // marginTop: 2,
-      // marginBottom: 2,
-      // position: 'absolute',
-      // left: -8,
-      alignItems: 'center',
-      justifyContent: 'center',
+    width: defaultCircleSize,
+    height: defaultCircleSize,
+    borderRadius: 100,
+    backgroundColor: 'black',
+    // marginTop: 2,
+    // marginBottom: 2,
+    // position: 'absolute',
+    // left: -8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
-      fontSize: defaultTitleFontSize,
-      fontWeight: 'bold',
+    fontSize: defaultTitleFontSize,
+    fontWeight: 'bold',
   },
   description: {
-      borderLeftWidth: defaultLineWidth,
-      flexDirection: 'column',
-      flex: 1,
-      marginTop: 6,
+    borderLeftWidth: defaultLineWidth,
+    flexDirection: 'column',
+    flex: 1,
+    marginTop: 6,
   },
   separator: {
-      height: 0.75,
-      backgroundColor: '#aaa',
-      marginTop: 6,
-      marginBottom: 6
+    height: 0.75,
+    backgroundColor: '#aaa',
+    marginTop: 6,
+    marginBottom: 6
   }
 });
