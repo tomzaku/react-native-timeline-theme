@@ -204,4 +204,4 @@ Any help this module will be approciate!
 
 ### License
 
-[MIT](https://github.com/tomzaku/react-native-shimmer-placeholder/blob/master/LICENSE)
+[MIT](https://github.com/tomzaku/react-native-timeline-theme/blob/master/LICENSE)
