@@ -111,7 +111,7 @@ const data = [
 
 ```
 #### Render Different Detail
-![](https://github.com/tomzaku/react-native-timeline-theme/blob/master/phone-basic.png?raw=true)
+![](https://github.com/tomzaku/react-native-timeline-theme/blob/master/phone-detail.gif?raw=true)
 ``` js
 import { View, Text, StyleSheet, Image } from 'react-native';
 import TimeLine from '../lib/index'
@@ -128,7 +128,7 @@ const data = [
     titleStyle: {color: '#304ffe'},
     renderTimeBottom: () => (<View style={{ alignItems: 'flex-end', flex: 1, backgroundColor: 'white', borderRadius: 6, padding: 3 }}> <Text style={{fontSize: 8, fontWeight: 'bold'}}>Important</Text>
     <Text style={{fontSize: 8, fontWeight: 'bold', color: '#b40000'}}>Lazy time</Text><Text style={{fontSize: 8, fontWeight: 'bold', textAlign: 'right'}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text</Text></View>),
-    renderDetail: ({title, description, titleStyle}, index) => <View><Text style={{ fontSize: 20, fontWeight: 'bold'}}>{title}</Text><Image style={{width: 200, height: 150}} source={require('./assets/wake.gif')} /><Text>{description}</Text> </View>
+    renderDetail: ({title, description, titleStyle}, index) => <View><Text style={{ fontSize: 20, fontWeight: 'bold'}}>{title}</Text><Image style={{width: 200, height: 150}} source={require('./assets/wake.gif')} /><Text>{description}</Text></View>
   },
   {
     title: 'Eatting',
@@ -166,6 +166,7 @@ More Detail see [this](https://github.com/tomzaku/react-native-timeline-theme/tr
 ### Props
 
 This package is used FlatList, therefore you can override all the props at [this](https://facebook.github.io/react-native/docs/flatlist.html)
+
 | Prop | Description | Type | Default |
 |---|---|---| ---|
 |**`data`**| Data of timeline | array |[]|
@@ -192,9 +193,9 @@ This package is used FlatList, therefore you can override all the props at [this
 
 
 ### Todos
-
-[ ] Add dark, light theme
-[ ] Add theme seperator
+- [x] Add icon for line event
+- [ ] Add dark, light theme
+- [ ] Add theme seperator
 
 ### Contribute
 
