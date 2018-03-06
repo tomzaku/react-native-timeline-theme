@@ -19,56 +19,22 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 import Timeline from '../lib/index'
-
+import TimeLineBasic from './TimeLineBasic'
+import TimeLineIcon from './TimeLineIcon'
+import TimeLineRenderDetail from './TimeLineRenderDetail'
 
 type Props = {};
 
-const data = [
-  {time: new Date(), title: 'Event 1', description: 'Event 1 Description', lineColor: 'red', circleColor: 'blue', circleSize: 20, innerCircleSize: 15},
-  {time: new Date(), title: 'Event 2', description: 'Event 2 Description', 'lineColor': 'green'},
-  {time: new Date(), title: 'Event 3', description: 'Event 3 Description'},
-  {time: new Date(), title: 'Event 4', description: 'Event 4 Description'},
-  {time: new Date(), title: 'Event 5', description: 'Event 5 Description'}
-]
+
 export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
         </View>
-        <View style={{flexDirection: 'row'}}>
-          <View style={{flex: 1, backgroundColor: 'red', height: 30}}>
-          </View>
-          <View style={{backgroundColor: 'yellow', width: 60}}>
-          </View>
-          <View style={{flex: 1, backgroundColor: 'green'}}>
-          </View>
-        </View>
-        <Timeline
-          style={styles.timeline}
-          data={data}
-          isRenderSeperator
-          // renderTimeBottom={() => <View style={{ flex: 1, height: 20, backgroundColor: 'red'}}/>}
-        />
-        <Timeline
-          style={styles.timeline}
-          data={data}
-          columnFormat= 'two-column'
-          innerCircleType={'dot'}
-          titleStyle= {styles.timeStyle}
-          isRenderSeperator
-          marginTopCircle={4}
-          // renderTimeBottom={() => <View style={{ flex: 1, backgroundColor: 'red'}}/>}
-        />
-        <Timeline
-          style={styles.timeline}
-          data={data}
-          columnFormat= 'single-column-right'
-          isRenderSeperator
-          showAmPm={false}
-          
-          renderTimeBottom={() => <View style={{ flex: 1, height: 20, backgroundColor: 'red'}}/>}
-        />
+        <TimeLineBasic />
+        {/* <TimeLineIcon /> */}
+        {/* <TimeLineRenderDetail /> */}
       </View>
     );
   }
