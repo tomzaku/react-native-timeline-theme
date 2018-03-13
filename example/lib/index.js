@@ -14,6 +14,7 @@ let defaultDotColor = 'white'
 let defaultInnerCircle = 'none'
 let defaultTitleFontSize = 16
 let defaultTimeWidth = 55
+import Dash from 'react-native-dash';
 
 export default class Timeline extends Component {
   constructor(props, context) {
@@ -43,7 +44,7 @@ export default class Timeline extends Component {
   }
   renderItem = ({ item, index }) => {
     let content = null
-    const { columnFormat, rowContainerStyle } = this.props;
+    let { columnFormat, rowContainerStyle, lineColor, lineWidth } = this.props;
     switch(columnFormat){
       case 'single-column-left':
       case 'single-column-right':
@@ -76,7 +77,18 @@ export default class Timeline extends Component {
           </View>
         )
     }
-    return content
+    lineWidth = item.lineWidth ? item.lineWidth : lineWidth
+    lineColor = item.lineColor ? item.lineColor : lineColor
+    let renderSeperateTotal = null
+    if (item.renderSeperateTotal) {
+      renderSeperateTotal = <Dash style={{flex: 1, marginBottom: 6}} dashColor={lineColor} dashThickness={lineWidth} />
+    }
+    return (
+      <View>
+        {content}
+        {renderSeperateTotal}
+      </View>
+    );
   }
   renderTime = (item, index) => {
     let textStyle = {};
@@ -85,10 +97,10 @@ export default class Timeline extends Component {
     switch(columnFormat){
       case 'single-column-left':
           textStyle = styles.leftText
-          timeContainerWrapper = { maxHeight: defaultTimeWidth }
+          timeContainerWrapper = { maxWidth: defaultTimeWidth }
           break
       case 'single-column-right':
-          timeContainerWrapper = { maxHeight: defaultTimeWidth }
+          timeContainerWrapper = { maxWidth: defaultTimeWidth }
           break
       case 'two-column':
           textStyle = index % 2 == 0 ? styles.leftText : textStyle;
@@ -124,7 +136,8 @@ export default class Timeline extends Component {
   }
 
   renderEvent = (item, index) => {
-    const { onEventPress, detailContainerStyle } = this.props;
+    let { onEventPress, detailContainerStyle } = this.props;
+    detailContainerStyle = item.detailContainerStyle ? item.detailContainerStyle : detailContainerStyle
     return (
       <View>
         <TouchableOpacity 
@@ -146,7 +159,7 @@ export default class Timeline extends Component {
     titleStyle = item.titleStyle ? item.titleStyle : titleStyle
     descriptionStyle = item.descriptionStyle ? item.descriptionStyle : descriptionStyle
     renderDetail = item.renderDetail ? item.renderDetail : renderDetail
-    if (renderDetail) return renderDetail(item, index)
+    if (renderDetail) return renderDetail({ ...item, titleStyle: [styles.title, titleStyle], descriptionStyle, renderDetail }, index)
     return (
       <View style={styles.container}>
           <Text style={[styles.title, titleStyle]}>{item.title}</Text>
@@ -159,22 +172,27 @@ export default class Timeline extends Component {
   }
 
   renderCircleAndLineVertical = (item, index) => {
-    let { circleSize, circleColor, lineWidth, circleStyle, lineColor, timeStyle, marginTopCircle, data, spacingDot, renderIcon, widthLineContainer } = this.props;
-    circleSize = item.circleSize ? item.circleSize : circleSize
-    circleColor = item.circleColor ? item.circleColor : circleColor
+    let { lineWidth, lineColor, marginTopCircle, data, widthLineContainer, renderLine, dashLine } = this.props;
     lineWidth = item.lineWidth ? item.lineWidth : lineWidth
     lineColor = item.lineColor ? item.lineColor : lineColor
+    dashLine = item.dashLine ? item.dashLine : dashLine
+    renderLine = item.renderLine ? item.renderLine : renderLine
     let innerCircle = this.renderInnerCircle(item);
-    let heightLineTop = marginTopCircle / 2;  
+    let heightLineTop = marginTopCircle / 2;
+    let renderTopLine = renderLine || index < 1  ? renderLine : <View style={[{width: lineWidth, height: heightLineTop, backgroundColor: data[index-1].lineColor ? data[index-1].lineColor : lineColor }]}/>;
+    let renderBottomLine = renderLine ? renderLine : <View style={{ width: lineWidth, flex: 1, backgroundColor: lineColor}} />;
+    if ( dashLine ) {
+      renderBottomLine = <Dash style={{flex: 1 , flexDirection: 'column'}} dashColor={lineColor} dashThickness={lineWidth} />
+    }
     return (
       <View style={{ alignItems: 'center', flex: 1, width: widthLineContainer }}>
         {
           index != 0
-          ? <View style={[{width: lineWidth, height: heightLineTop, backgroundColor: data[index-1].lineColor ? data[index-1].lineColor : lineColor }]}/>
+          ? renderTopLine
           : null
         }
         {this.renderCircle(item, index)}
-        <View style={{ width: lineWidth, flex: 1, backgroundColor: lineColor}} />
+        {renderBottomLine}
       </View>
     )
   }
@@ -244,6 +262,8 @@ Timeline.defaultProps = {
     renderDetail: null,
     isRenderSeperator: false,
     widthLineContainer: 30,
+    renderLine: null,
+    dashLine: false,
 }
 
 let styles = StyleSheet.create({

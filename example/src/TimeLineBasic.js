@@ -26,6 +26,7 @@ const data = [
     title: 'Relax',
     description: 'Listen to music "Hello Vietnam" song',
     time: new Date("March 6, 2018 14:15:00"),
+    dashLine: true,
   },
 ]
 class TimeLineBasic extends Component {
