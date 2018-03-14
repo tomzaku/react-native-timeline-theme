@@ -9,8 +9,7 @@ const data = [
     description: 'Remember tooth brushing and read notes on the tablet',
     time: new Date("March 6, 2018 6:15:00"),
     innerCircleType: 'dot',
-    dotSize: 8,
-    circleSize: 20,
+
   },
   {
     title: 'Eatting',
@@ -27,6 +26,8 @@ const data = [
     description: 'Listen to music "Hello Vietnam" song',
     time: new Date("March 6, 2018 14:15:00"),
     dashLine: true,
+    dotSize: 8,
+    circleSize: 20,
   },
 ]
 class TimeLineBasic extends Component {
@@ -35,7 +36,7 @@ class TimeLineBasic extends Component {
       <View style={styles.container}>
         {/* <Text>TimeLineBasic</Text> */}
         <TimeLine
-          data={data}
+          data={data.reverse()}
           isRenderSeperator
           innerCircleType={'dot'}
         />
