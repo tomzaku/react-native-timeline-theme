@@ -189,11 +189,14 @@ This package is used FlatList, therefore you can override all the props at [this
 |**`renderTimeBottom`**| Render Component Below Time| function |`null`|
 |**`lineWidth`**|With of line| number |`0.75`|
 |**`lineColor`**|Color of line| string |`#909090`|
+|**`dashLine`**|style of line: dash| bool |`false`|
+|**`renderSeperateTotal`**|vertical line in the bottom of event| bool |`false`|
 
 
 
 ### Todos
 - [x] Add icon for line event
+- [x] Add dash line 
 - [ ] Add dark, light theme
 - [ ] Add theme seperator
 
