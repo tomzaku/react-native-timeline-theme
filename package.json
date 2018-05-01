@@ -2,7 +2,8 @@
   "name": "react-native-timeline-theme",
   "version": "0.0.4",
   "peerDependencies": {
-    "prop-types": ">=15.6.0"
+    "prop-types": ">=15.6.0",
+    "react-native-dash": ">=0.0.8"
   },
   "jest": {
     "preset": "react-native"
