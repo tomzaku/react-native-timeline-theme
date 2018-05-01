@@ -13,11 +13,11 @@ This package only use flexbox(without absolute) & FlatList
 
 ### Installation
 
-`npm i react-native-timeline-theme --save`
+`npm i react-native-dash && npm i react-native-timeline-theme --save`
 
 or
 
-`yarn add react-native-timeline-theme`
+`yarn add react-native-dash && yarn add react-native-timeline-theme`
 
 
 That's all!
