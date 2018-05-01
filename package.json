@@ -1,20 +1,8 @@
 {
   "name": "react-native-timeline-theme",
   "version": "0.0.2",
-  "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
-  },
-  "dependencies": {
-    "moment": "^2.20.1",
-    "react": "^16.3.0-alpha.1",
-    "react-native": "0.54.0"
-  },
-  "devDependencies": {
-    "babel-jest": "22.4.1",
-    "babel-preset-react-native": "4.0.0",
-    "jest": "22.4.2",
-    "react-test-renderer": "^16.3.0-alpha.1"
+  "peerDependencies": {
+    "prop-types": ">=15.6.0"
   },
   "jest": {
     "preset": "react-native"
@@ -34,7 +22,7 @@
     "flexbox",
     "flatlist"
   ],
-  "author": "zaku",
+  "author": "Zaku",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/tomzaku/react-native-timeline/issues"
