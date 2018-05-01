@@ -1,6 +1,6 @@
 {
   "name": "react-native-timeline-theme",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "dependencies ": {
     "prop-types": "^15.6.0"
   },
