@@ -4,13 +4,14 @@
 <h5 align="center">
 Collection of TimeLine theme. 
 This package only use flexbox(without absolute) & FlatList
+
 </h5>
 <p align="center">
 <img src="https://github.com/tomzaku/react-native-timeline-theme/blob/master/phone-detail.gif?raw=true">
 </p>
 
 ## Get Started
-
+Inspired by [react-native-timeline-listview](https://github.com/thegamenicorus/react-native-timeline-listview)
 ### Installation
 
 `npm i react-native-dash && npm i react-native-timeline-theme --save`
